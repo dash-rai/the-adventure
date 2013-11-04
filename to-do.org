@@ -1,0 +1,12 @@
+* Make a room-generator script that takes plain English input and spits out room objects or classes.
+
+* Clean up the code a bit
+
+* Write a scanner that will understand user input and call the appropriate methods.
+Let it return tokens and an associated value. Something like (direction, north)
+
+* Write a 'death' method that will be invoked by a health checker method.
+Include health checker in the main program so that it will loop after every input.
+Perhaps something more efficient would do too...
+
+* Add in fights with dragons and what not :')

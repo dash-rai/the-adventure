@@ -1,3 +1,11 @@
+
+#################
+
+# EVERYTHING IS HERE RIGHT NOW
+
+#################
+
+
 #objects that you hold: array or hash
 #function to pick up said object
 #function to pick up all objects in room
@@ -107,35 +115,11 @@ class Room
   attr_accessor :items
   
   def move(direction)
-    case direction
-    when :N
-      if $rooms.include? @paths[:N]
-        $current_room = $rooms[@paths[:N]]
-        $current_room.description
-      else
-        puts "You can't go there."
-      end
-    when :E
-      if $rooms.include? @paths[:E]
-        $current_room = $rooms[@paths[:E]]
-        $current_room.description
-      else
-        puts "You can't go there."
-      end
-    when :S
-      if $rooms.include? @paths[:S]
-        $current_room = $rooms[@paths[:S]]
-        $current_room.description
-      else
-        puts "You can't go there."
-      end
-    when :W
-      if $rooms.include? @paths[:W]
-        $current_room = $rooms[@paths[:W]]
-        $current_room.description
-      else
-        puts "You can't go in that direction."
-      end
+    if $rooms.include? @paths[direction]
+      $current_room = $rooms[@paths[direction]]
+      $current_room.description
+    else
+      puts "You can't go there."
     end
   end
   
@@ -165,9 +149,75 @@ end
 
 def understand(input)
 
-  if input.scan(/w+/)
-    puts "Word"
+  
+  # input = input.chomp.strip.downcase
+  # if input.scan(/w+/)
+  #   puts "Word"
+  # end
+  
+  #   if input == "quit"
+  #     puts "Thank you for playing. Goodbye!"
+  #     break
+  #   end
+
+  #   # if input == "go north"
+  #   #   $current_room.move(:N)
+  #   # end
+
+  #   # execute(understand(input))
+    
+  #   understand(input)
+  # rescue
+  #   puts "Error."
+  #   puts "Thank you for playing. Goodbye!"
+  #   break
+
+  input = input.chomp.strip.downcase
+
+  if input == ""
+    return nil
   end
+  
+  if input == "n" || !input.scan(/^go\s+north$/).empty?
+    return :N
+  end
+
+  if input == "e" || !input.scan(/^go\s+east$/).empty?
+    return :E
+  end
+  
+  if input == "s" || !input.scan(/^go\s+south$/).empty?
+    return :S
+  end
+
+  if input == "w" || !input.scan(/^go\s+west$/).empty?
+    return :W
+  end
+
+  if input == "ne" || !input.scan(/^northeast$|^north-east$|^north\s+east$|^go\s+northeast$|^go\s+north-east$|^go\s+north\s+east$/).empty?
+    return :NE
+  end
+
+  if input == "se" || !input.scan(/^southeast$|^south-east$|^south\s+east$|^go\s+southeast$|^go\s+south-east$|^go\s+south\s+east$/).empty?
+    return :SE
+  end
+
+  if input == "sw" || !input.scan(/^southwest$|^south-west$|^south\s+west$|^go\s+southwest$|^go\s+south-west$|^go\s+south\s+west$/).empty?
+    return :SW
+  end
+
+  if input == "nw" || !input.scan(/^northwest$|^north-west$|^north\s+west$|^go\s+northwest$|^go\s+north-west$|^go\s+north\s+west$/).empty?
+    return :NW
+  end
+
+  if input == "u"
+    return :U
+  end
+  if input == "d"
+    return :D
+  end
+  
+  return :gibberish
   
 end
 
@@ -229,24 +279,11 @@ while true
   # A ctrl-d doesn't play well. Reports an error. Perhaps you could catch that and exit nicely.
   # Right now, the error handling below takes care of that, but doesn't look like the best way since
   # any error will go to this.
-  begin
-    input = STDIN.gets.chomp.strip.downcase
-    if input == "quit"
-      puts "Thank you for playing. Goodbye!"
-      break
-    end
+  input = STDIN.gets
 
-    # if input == "go north"
-    #   $current_room.move(:N)
-    # end
+  p understand(input)
+  
 
-    # execute(understand(input))
-    
-    understand(input)
-  rescue
-    puts "Error."
-    puts "Thank you for playing. Goodbye!"
-    break
-  end
 end
   
+
