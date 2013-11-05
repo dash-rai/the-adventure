@@ -34,3 +34,8 @@ Perhaps something more efficient would do too...
   sentence = [first_word, second_word]
   
   but I don't think that's quite necessary. Perhaps just return a struct with (direction, north)
+
+#H1
+*italics*
+**bold*
+###haha
