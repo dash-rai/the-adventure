@@ -1,75 +1,132 @@
+$verb_list = {
+  :go => [:N, :E, :S, :W, :NE, :SE, :SW, :NW],
+  :enter => [:house], # review having this around
+  :take => [:lantern], #don't forget those pesky commas
+  :look => [:around, :lantern] # look around, look at lantern. Remember the "at" will be removed
+}
+
+$prepositions_list = ["the", "at", "on", "under", "above", "in", "with"]
+
+Pair = Struct.new(:verb, :token)
 
 def understand(input)
 
-  
-  # input = input.chomp.strip.downcase
-  # if input.scan(/w+/)
-  #   puts "Word"
-  # end
-  
-  #   if input == "quit"
-  #     puts "Thank you for playing. Goodbye!"
-  #     break
-  #   end
-
-  #   # if input == "go north"
-  #   #   $current_room.move(:N)
-  #   # end
-
-  #   # execute(understand(input))
-    
-  #   understand(input)
-  # rescue
-  #   puts "Error."
-  #   puts "Thank you for playing. Goodbye!"
-  #   break
-
-  input = input.chomp.strip.downcase
+  input = input.strip.downcase
 
   if input == ""
-    return nil
+    return Pair.new(:gibberish, :empty)
   end
   
-  if input == "n" || !input.scan(/^go\s+north$/).empty?
-    return :N
+  if input == "hello" || input == "hi" || input == "hey"
+    return Pair.new(:say, :hello)
   end
 
-  if input == "e" || !input.scan(/^go\s+east$/).empty?
-    return :E
+  # SHORTCUTS -- expect these to be accurate enough to do direct comparisons
+  #if input == "north"
+  
+  verb, noun = get_verb_noun_tokens(input.split(' '))
+
+  if !$verb_list.include? verb
+    return Pair.new(:gibberish, "I don't know what that means!") #check this
+  elsif $verb_list[verb].include? noun
+    return Pair.new(verb, noun)
+  end
+
+  return Pair.new(:gibberish, "I don't understand " + noun.join)
+
+  #Check the last return
+
+end
+
+# return :gibberish, "ERROR MESSAGE TO DISPLAY" to execute
+
+# returns :verb, :noun if successful
+# :gibberish, "nouns" if unsuccessful
+def get_verb_noun_tokens(input) 
+
+  verb = nil
+  input = remove_preps(input)
+  
+  
+  if input.first == "go" || input.first == "head" || input.first == "walk"
+    verb = :go
+  elsif input.first == "enter"
+    verb = :enter
+  elsif input.first == "take"
+    verb = :take
   end
   
-  if input == "s" || !input.scan(/^go\s+south$/).empty?
-    return :S
+
+  if verb
+    noun = tokenize(input[1...input.length])
+    if noun
+      return verb, noun
+    else
+      return :gibberish, input[1...input.length]
+    end
   end
 
-  if input == "w" || !input.scan(/^go\s+west$/).empty?
-    return :W
+  # PICK LANTERN UP won't work!
+  if input.first == "pick"
+    
+    if input[1] == "up"
+      noun = tokenize(input[2...input.length])
+      if noun
+        return verb, noun
+      else
+        return :gibberish, input[2...input.length]
+      end
+    else
+      noun = tokenize(input[1...input.length])
+      if noun
+        return verb, noun
+      else
+        return :gibberish, input[1...input.length]
+      end
+    end
   end
 
-  if input == "ne" || !input.scan(/^northeast$|^north-east$|^north\s+east$|^go\s+northeast$|^go\s+north-east$|^go\s+north\s+east$/).empty?
-    return :NE
-  end
 
-  if input == "se" || !input.scan(/^southeast$|^south-east$|^south\s+east$|^go\s+southeast$|^go\s+south-east$|^go\s+south\s+east$/).empty?
-    return :SE
+  if input.first == "pick"
+    input.delete "up"
+    verb = :take
+    noun = tokenize(input[1...input.length])
+    if noun
+      return verb, noun
+    else
+      return :gibberish, input[1...input.length]
+    end
   end
-
-  if input == "sw" || !input.scan(/^southwest$|^south-west$|^south\s+west$|^go\s+southwest$|^go\s+south-west$|^go\s+south\s+west$/).empty?
-    return :SW
-  end
-
-  if input == "nw" || !input.scan(/^northwest$|^north-west$|^north\s+west$|^go\s+northwest$|^go\s+north-west$|^go\s+north\s+west$/).empty?
-    return :NW
-  end
-
-  if input == "u"
-    return :U
-  end
-  if input == "d"
-    return :D
-  end
-  
-  return :gibberish
   
 end
 
+def remove_preps(input)
+  $prepositions_list.each do |prep|
+    input.delete(prep)
+  end
+  return input
+end
+
+def tokenize(noun)
+  if noun == "north" || noun == "n"
+    return :N
+  end
+  if noun == "east" || noun == "e"
+    return :E
+  end
+  if noun == "south" || noun == "s"
+    return :S
+  end
+  if noun == "west" || noun == "w"
+    return :W
+  end
+  if noun == "northeast" || noun == "north-east"
+  end    
+  if noun == "lantern"
+    return :lantern
+  end
+  if noun == "around"
+    return :around
+  end
+  return nil
+end

@@ -35,3 +35,5 @@ second_word = Pair.new("verb", "go")
 sentence = [first_word, second_word]
 
 but I don't think that's quite necessary. Perhaps just return a struct with (direction, north)
+
+# Organize list of verbs, nouns, tokens so that it's easier to make additions and deletions
