@@ -108,6 +108,7 @@ def remove_preps(input)
 end
 
 def tokenize(noun)
+  noun = noun.join
   if noun == "north" || noun == "n"
     return :N
   end
@@ -120,8 +121,24 @@ def tokenize(noun)
   if noun == "west" || noun == "w"
     return :W
   end
-  if noun == "northeast" || noun == "north-east"
-  end    
+  if noun == "northeast" || noun == "north-east" || noun == "ne"
+    return :NE
+  end
+  if noun == "southeast" || noun == "south-east" || noun == "se"
+    return :SE
+  end
+  if noun == "southwest" || noun == "south-west" || noun == "sw"
+    return :SW
+  end
+  if noun == "northwest" || noun == "north-west" || noun == "nw"
+    return :NW
+  end
+  if noun == "up" || noun == "u"
+    return :U
+  end
+  if noun == "down" || noun == "d"
+    return :D
+  end
   if noun == "lantern"
     return :lantern
   end
