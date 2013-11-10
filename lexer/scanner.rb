@@ -1,113 +1,143 @@
+Pair = Struct.new(:token, :value)
+
 $verb_list = {
-  :go => [:N, :E, :S, :W, :NE, :SE, :SW, :NW],
+   :go => [:N, :E, :S, :W, :NE, :SE, :SW, :NW],
   :enter => [:house], # review having this around
   :take => [:lantern], #don't forget those pesky commas
   :look => [:around, :lantern] # look around, look at lantern. Remember the "at" will be removed
 }
 
-$prepositions_list = ["the", "at", "on", "under", "above", "in", "with"]
+$prepositions_list = ["the", "at", "on", "under", "above", "in", "with", "to"]
+$adjectives_list = ["brown", "brass"]
 
-Pair = Struct.new(:verb, :token)
-
-def understand(input)
-
-  input = input.strip.downcase
-
-  if input == ""
+def understand(input_string)
+  input_string = input_string.strip.downcase
+  #EMPTY input
+  if input_string == ""
     return Pair.new(:gibberish, :empty)
   end
-  
-  if input == "hello" || input == "hi" || input == "hey"
+  #GREETINGS
+  if input_string == "hello" || input_string == "hi" || input_string == "hey"
     return Pair.new(:say, :hello)
   end
-
-  # SHORTCUTS -- expect these to be accurate enough to do direct comparisons
-  #if input == "north"
-  
-  verb, noun = get_verb_noun_tokens(input.split(' '))
-
-  if !$verb_list.include? verb
-    return Pair.new(:gibberish, "I don't know what that means!") #check this
-  elsif $verb_list[verb].include? noun
-    return Pair.new(verb, noun)
+  #DIRECTION SHORTCUTS
+  if input_string == "north" || input_string == "n"
+    return Pair.new(:go, :N)
+  end
+    if input_string == "east" || input_string == "e"
+    return Pair.new(:go, :E)
+  end
+  if input_string == "south" || input_string == "s"
+    return Pair.new(:go, :S)
+  end
+  if input_string == "west" || input_string == "w"
+    return Pair.new(:go, :W)
+  end
+  if input_string == "up" || input_string == "u"
+    return Pair.new(:go, :U)
+  end
+  if input_string == "down" || input_string == "d"
+    return Pair.new(:go, :D)
+  end
+  if input_string == "northeast" || input_string == "north-east" || input_string == "ne" 
+    return Pair.new(:go, :NE)
+  end
+  if input_string == "southeast" || input_string == "south-east" || input_string == "se"
+    return Pair.new(:go, :SE)
+  end
+  if input_string == "southwest" || input_string == "south-west" || input_string == "sw"
+    return Pair.new(:go, :SW)
+  end
+  if input_string == "northwest" || input_string == "north-west" || input_string == "nw"
+    return Pair.new(:go, :NW)
   end
 
-  return Pair.new(:gibberish, "I don't understand " + noun.join)
+  #GET VERB AND NOUN
+  token, value = get_verb_noun(input_string.split(' '))
 
-  #Check the last return
-
+  # :gibberish token values:
+  # :goWHERE
+  # :takeWHAT
+  # :throwAT?
+  # :breakWITH?
+  # if verb, but noun == nil, say verb what?
+  #I DIDN'T UNDERSTAND THAT!
+  if token == :gibberish
+    return Pair.new(token, value) # There doesn't appear to be a NOUN? in that sentence
+  end
+  #RETURN token, value
+  if verb_list.include?(token) && verb_list[token].include?(value)
+    return Pair.new(token, value)
+  else
+    return Pair.new(:gibberish, "I don't know how to do that to a %s." % value)
+  end
+                    
 end
 
-# return :gibberish, "ERROR MESSAGE TO DISPLAY" to execute
-
-# returns :verb, :noun if successful
-# :gibberish, "nouns" if unsuccessful
-def get_verb_noun_tokens(input) 
+def get_verb_noun(input)
 
   verb = nil
-  input = remove_preps(input)
-  
-  
+  input = remove_preps_adjs(input)
+
   if input.first == "go" || input.first == "head" || input.first == "walk"
     verb = :go
   elsif input.first == "enter"
     verb = :enter
   elsif input.first == "take"
     verb = :take
-  end
-  
-
-  if verb
-    noun = tokenize(input[1...input.length])
-    if noun
-      return verb, noun
-    else
-      return :gibberish, input[1...input.length]
-    end
-  end
-
-  # PICK LANTERN UP won't work!
-  if input.first == "pick"
-    
-    if input[1] == "up"
-      noun = tokenize(input[2...input.length])
-      if noun
-        return verb, noun
-      else
-        return :gibberish, input[2...input.length]
-      end
-    else
-      noun = tokenize(input[1...input.length])
-      if noun
-        return verb, noun
-      else
-        return :gibberish, input[1...input.length]
-      end
-    end
-  end
-
-
-  if input.first == "pick"
-    input.delete "up"
+  elsif input.first == "pick"
+    input.delete("up") #takes care of things like "pick upX" or "pick X up"
     verb = :take
-    noun = tokenize(input[1...input.length])
-    if noun
-      return verb, noun
-    else
-      return :gibberish, input[1...input.length]
-    end
   end
   
-end
-
-def remove_preps(input)
-  $prepositions_list.each do |prep|
-    input.delete(prep)
+  if verb
+    noun = input[1...input.length]
+    return verb, symbolisize(noun)
   end
-  return input
-end
+  
+  #MULTI NOUN COMMANDS:
+  #THROW
+  if input.first == "throw"
+    if !input.include? "at"
+      return :gibberish, :throwAT? #in execute() say "What do you want me to throw noun at?
+    end
+    noun = input[1..input.index("at")], input[(input.index("at") + 1)...input.length]
+    if noun[0] == nil
+      return :gibberish, :throwWHAT?
+    end
+    if noun[1] == nil
+      return :gibberish, :throwAT?
+    end
+    verb = :throw
+  end
+  
+  #BREAK
+  if input.first == "break"
+    if !input.include? "with"
+      return :gibberish, :breakWITH?
+    end
+    noun = input[1..input.index("at")], input[(input.index("at") + 1)...input.length]
+    if noun[0] == nil
+      return :gibberish, :breakWHAT?
+    end
+    if noun[1] == nil
+      return :gibberish, :breakWITH?
+    end
+    verb = :break
+  end
 
-def tokenize(noun)
+  # #TIE
+  # if input.first == "tie"
+  #   if !input.include? "with"
+  # return verb, [symbolisize(noun[0]), symbolisize(noun[1])]
+  # #tie rope onto railing
+  # #tie sack with rope
+
+
+  #perhaps do an all-else-fail return here
+
+end
+def symbolisize(noun)
   noun = noun.join
   if noun == "north" || noun == "n"
     return :N
@@ -147,3 +177,12 @@ def tokenize(noun)
   end
   return nil
 end
+
+
+
+
+
+
+
+
+        
