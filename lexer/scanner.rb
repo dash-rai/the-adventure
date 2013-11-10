@@ -178,9 +178,12 @@ def symbolisize(noun)
   return nil
 end
 
-
-
-
+def remove_preps_adjs(input)
+  $prepositions_list.each do |prep|
+    input.delete(prep)
+  end
+  return input
+end
 
 
 
