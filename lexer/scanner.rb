@@ -1,7 +1,7 @@
 Pair = Struct.new(:token, :value)
 
 $verb_list = {
-   :go => [:N, :E, :S, :W, :NE, :SE, :SW, :NW],
+  :go => [:N, :E, :S, :W, :NE, :SE, :SW, :NW, :U, :D],
   :enter => [:house], # review having this around
   :take => [:lantern], #don't forget those pesky commas
   :look => [:around, :lantern] # look around, look at lantern. Remember the "at" will be removed
@@ -11,7 +11,7 @@ $prepositions_list = ["the", "at", "on", "under", "above", "in", "with", "to"]
 $adjectives_list = ["brown", "brass"]
 
 def understand(input_string)
-  input_string = input_string.strip.downcase
+  input_string = input_string.strip.downcase.gsub(/[^a-z0-9\s]/, '')
   #EMPTY input
   if input_string == ""
     return Pair.new(:gibberish, :empty)
@@ -24,7 +24,7 @@ def understand(input_string)
   if input_string == "north" || input_string == "n"
     return Pair.new(:go, :N)
   end
-    if input_string == "east" || input_string == "e"
+  if input_string == "east" || input_string == "e"
     return Pair.new(:go, :E)
   end
   if input_string == "south" || input_string == "s"
@@ -51,7 +51,15 @@ def understand(input_string)
   if input_string == "northwest" || input_string == "north-west" || input_string == "nw"
     return Pair.new(:go, :NW)
   end
+  if input_string == "look" || input_string == "l"
+    return Pair.new(:look, :around)
+  end
 
+  # ACTION SHORTCUTS
+  if input_string == "take"
+    return Pair.new(:take, :all)
+  end
+  
   #GET VERB AND NOUN
   token, value = get_verb_noun(input_string.split(' '))
 
@@ -62,16 +70,24 @@ def understand(input_string)
   # :breakWITH?
   # if verb, but noun == nil, say verb what?
   #I DIDN'T UNDERSTAND THAT!
+
+  # possible returns:
+  # did not find verb, did not find noun :gibberish, "Could not understand that"
+  # verb, no noun :NoNoun, :verb
+  # no verb, noun :NoVerb, :noun
+  # verb, noun :verb, :noun
+
+  
   if token == :gibberish
     return Pair.new(token, value) # There doesn't appear to be a NOUN? in that sentence
   end
   #RETURN token, value
-  if verb_list.include?(token) && verb_list[token].include?(value)
+  if $verb_list.include?(token) && $verb_list[token].include?(value)
     return Pair.new(token, value)
-  else
-    return Pair.new(:gibberish, "I don't know how to do that to a %s." % value)
+  else # probably don't ever need this
+    return Pair.new(:gibberish, value)
   end
-                    
+  
 end
 
 def get_verb_noun(input)
@@ -88,18 +104,24 @@ def get_verb_noun(input)
   elsif input.first == "pick"
     input.delete("up") #takes care of things like "pick upX" or "pick X up"
     verb = :take
+  elsif input.first == "look"
+    verb = :look
   end
   
   if verb
     noun = input[1...input.length]
-    return verb, symbolisize(noun)
+    symbol = symbolisize(noun)
+    if symbol
+      return verb, symbol
+    else
+      return :gibberish, "I don't know how to do that to a %s." % noun.join(' ')
+    end
   end
-  
   #MULTI NOUN COMMANDS:
   #THROW
   if input.first == "throw"
     if !input.include? "at"
-      return :gibberish, :throwAT? #in execute() say "What do you want me to throw noun at?
+      return :gibberish, :throwAT #in execute() say "What do you want me to throw noun at?
     end
     noun = input[1..input.index("at")], input[(input.index("at") + 1)...input.length]
     if noun[0] == nil
@@ -114,7 +136,7 @@ def get_verb_noun(input)
   #BREAK
   if input.first == "break"
     if !input.include? "with"
-      return :gibberish, :breakWITH?
+      ;      return :gibberish, :breakWITH?
     end
     noun = input[1..input.index("at")], input[(input.index("at") + 1)...input.length]
     if noun[0] == nil
@@ -163,12 +185,13 @@ def symbolisize(noun)
   if noun == "northwest" || noun == "north-west" || noun == "nw"
     return :NW
   end
-  if noun == "up" || noun == "u"
+  if noun == "up" || noun == "u" || noun == "upstairs"
     return :U
   end
-  if noun == "down" || noun == "d"
+  if noun == "down" || noun == "d" || noun == "downstairs"
     return :D
   end
+  #things
   if noun == "lantern"
     return :lantern
   end
@@ -188,4 +211,4 @@ end
 
 
 
-        
+
