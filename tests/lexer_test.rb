@@ -77,7 +77,17 @@ class Tests < Test::Unit::TestCase
       "south-west" => :SW,
       "up" => :U,
       "down" => :D,
-      " DOWN " => :D
+      " DOWN " => :D,
+      "n" => :N,
+      "e" => :E,
+      "s" => :S,
+      "W" => :W,
+      "Ne" => :NE,
+      "SE" => :SE,
+      "sw" => :SW,
+      "nw" => :NW,
+      "u" => :U,
+      "d" => :D
     }
 
     @pick_lantern_strings = [
@@ -97,6 +107,13 @@ class Tests < Test::Unit::TestCase
       "l" => :around
     }
 
+    @greeting_strings = [
+                         "hello",
+                         "hI!!!! ",
+                         "greetings",
+                         "hey!"
+                         ]
+    
     @gibberish_strings = {
       "" => :empty,
     }

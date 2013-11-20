@@ -1,0 +1,41 @@
+go (move)(climb)
+   north
+   east
+   south
+   west
+   northeast
+   southeast
+   southwest
+   northwest
+   up
+   down
+take
+   item
+   all   
+drop
+   item
+   all
+open
+   containter
+   door
+   window
+close
+   container
+   door
+   window
+read object
+observe object (examine)
+move object
+eat object
+pray
+drink
+shout	
+rape (item)
+kill self with weapon (commit suicide)
+tie (tie-able) object to location/object
+throw (throwable) object at location
+break (breakable) object with object
+turn (turnable) object with object [turn (control) with (item)]
+turn off (switchable) object
+show inventory
+fight (fightable) creature with object (or attack)

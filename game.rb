@@ -19,9 +19,12 @@
 #dig-able feature some other time
 
 require_relative 'lexer/scanner.rb'
+require_relative 'execute/execute.rb'
 
 class Character
 
+  attr_reader :health         
+  
   def initialize
     @items = []
     @health = 1
@@ -75,8 +78,6 @@ class Character
   def change_health(change) #negative change to cause damage
     if @health + change > 1
       @health = 1
-    elsif @health + change <= 0
-      dead()
     else
       @health += change
     end
@@ -153,9 +154,10 @@ end
 
 ################################################################################
       
-one = Character.new
-one.change_health(-0.5)
-one.display_health
+$runner = Character.new
+
+$runner.change_health(-0.5)
+$runner.display_health
 
 i = Item.new(:lantern, 0.1, TRUE, TRUE)
 puts i.attributes
@@ -173,30 +175,37 @@ $rooms = {
   :Kitchen => Living_Room.new # for testing. REMOVE
   }
 
-
+puts
 $current_room = $rooms[:LivingRoom]
 
 p $current_room
-p one
 
-one.pick_item(:lantern)
+puts
+$current_room = $rooms[:LivingRoom]
+p $current_room
+
+puts
+
+p $runner
+
+$runner.pick_item(:lantern)
 
 p $current_room
-p one
+p $runner
 
-one.drop_item(:lantern)
+$runner.drop_item(:lantern)
 
 p $current_room
-p one
+p $runner
 
-one.drop_item(:lantern)
-one.pick_item(:lantern)
-one.pick_item(:lantern)
+$runner.drop_item(:lantern)
+$runner.pick_item(:lantern)
+$runner.pick_item(:lantern)
 # Well, pick and drop works!
 
 $current_room.move(:N)
 $current_room.move(:S)
-
+$runner.drop_item(:lantern)
 prompt = '> '
 puts '*' * 80
 puts "Welcome!"
@@ -216,9 +225,13 @@ while true
   end
   
   p understand(input)
-  
+  execute(understand(input))
 
+  if $runner.health < 0
+    puts "Too low health. You die."
+  end
 end
   
 puts "Thank you for playing The Adventure."
+# output score or level too
 puts

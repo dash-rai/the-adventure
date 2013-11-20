@@ -1,3 +1,8 @@
+# go into the house
+# drop item
+
+
+
 Pair = Struct.new(:token, :value)
 
 $verb_list = {
@@ -17,9 +22,12 @@ def understand(input_string)
     return Pair.new(:gibberish, :empty)
   end
   #GREETINGS
-  if input_string == "hello" || input_string == "hi" || input_string == "hey"
-    return Pair.new(:say, :hello)
+  if input_string == "hello" || input_string == "hi" || input_string == "hey" || input_string == "greetings"
+    return Pair.new(:say, :"Hello! Welcome to The Adventure!")
   end
+  # if input_string == "exit"
+  #   return Pair.new(:say, :"You can't go that way")
+  # end
   #DIRECTION SHORTCUTS
   if input_string == "north" || input_string == "n"
     return Pair.new(:go, :N)
@@ -59,7 +67,9 @@ def understand(input_string)
   if input_string == "take"
     return Pair.new(:take, :all)
   end
-  
+  if input_string == "drop"
+    return Pair.new(:drop, :all)
+  end
   #GET VERB AND NOUN
   token, value = get_verb_noun(input_string.split(' '))
 
