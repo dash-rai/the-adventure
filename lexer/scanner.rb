@@ -17,57 +17,44 @@ $adjectives_list = ["brown", "brass"]
 
 def understand(input_string)
   input_string = input_string.strip.downcase.gsub(/[^a-z0-9\s]/, '')
-  #EMPTY input
-  if input_string == ""
-    return Pair.new(:gibberish, :empty)
-  end
-  #GREETINGS
-  if input_string == "hello" || input_string == "hi" || input_string == "hey" || input_string == "greetings"
-    return Pair.new(:say, :"Hello! Welcome to The Adventure!")
-  end
-  # if input_string == "exit"
-  #   return Pair.new(:say, :"You can't go that way")
-  # end
-  #DIRECTION SHORTCUTS
-  if input_string == "north" || input_string == "n"
-    return Pair.new(:go, :N)
-  end
-  if input_string == "east" || input_string == "e"
-    return Pair.new(:go, :E)
-  end
-  if input_string == "south" || input_string == "s"
-    return Pair.new(:go, :S)
-  end
-  if input_string == "west" || input_string == "w"
-    return Pair.new(:go, :W)
-  end
-  if input_string == "up" || input_string == "u"
-    return Pair.new(:go, :U)
-  end
-  if input_string == "down" || input_string == "d"
-    return Pair.new(:go, :D)
-  end
-  if input_string == "northeast" || input_string == "north-east" || input_string == "ne" 
-    return Pair.new(:go, :NE)
-  end
-  if input_string == "southeast" || input_string == "south-east" || input_string == "se"
-    return Pair.new(:go, :SE)
-  end
-  if input_string == "southwest" || input_string == "south-west" || input_string == "sw"
-    return Pair.new(:go, :SW)
-  end
-  if input_string == "northwest" || input_string == "north-west" || input_string == "nw"
-    return Pair.new(:go, :NW)
-  end
-  if input_string == "look" || input_string == "l"
-    return Pair.new(:look, :around)
-  end
 
-  # ACTION SHORTCUTS
-  if input_string == "take"
+  case input_string
+    # EMPTY
+  when ""
+    return Pair.new(:gibberish, :empty)
+    #GREETINGS
+  when "hello", "hi", "hey", "greetings"
+    return Pair.new(:say, :"Hello! Welcome to The Adventure!")
+    # if input_string == "exit"
+    #   return Pair.new(:say, :"You can't go that way")
+    # end
+    #DIRECTION SHORTCUTS
+  when "north", "n"
+    return Pair.new(:go, :N)
+  when "east", "e"
+    return Pair.new(:go, :E)
+  when "south", "s"
+    return Pair.new(:go, :S)
+  when "west", "w"
+    return Pair.new(:go, :W)
+  when "up", "u"
+    return Pair.new(:go, :U)
+  when "down", "d"
+    return Pair.new(:go, :D)
+  when "northeast", "north-east", "ne" 
+    return Pair.new(:go, :NE)
+  when "southeast", "south-east", "se"
+    return Pair.new(:go, :SE)
+  when "southwest", "south-west", "sw"
+    return Pair.new(:go, :SW)
+  when "northwest", "north-west", "nw"
+    return Pair.new(:go, :NW)
+  when "look", "l"
+    return Pair.new(:look, :around)
+    # ACTION SHORTCUTS
+  when "take"
     return Pair.new(:take, :all)
-  end
-  if input_string == "drop"
+  when "drop"
     return Pair.new(:drop, :all)
   end
   #GET VERB AND NOUN
